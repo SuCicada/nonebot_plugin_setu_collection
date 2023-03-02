@@ -71,9 +71,29 @@ async def _(bot: Bot, event: MessageEvent):
     else:
         R18 = 0
 
-    if isinstance(event,GroupMessageEvent):
+    # if isinstance(event,GroupMessageEvent):
+    #     if R18:
+    #         await setu.finish("涩涩是禁止事项！！")
+    #     else:
+    #         if not Tag:
+    #             msg,url_list = MirlKoi(N,Tag,R18)
+    #             api = "MirlKoi API"
+    #         else:
+    #             tag = is_MirlKoi_tag(Tag)
+    #             if tag:
+    #                 msg,url_list = MirlKoi(N,tag,R18)
+    #                 api = "MirlKoi API"
+    #             else:
+    #                 msg,url_list = Anosu(N,Tag,R18)
+    #                 api = "Jitsu"
+    # else:
+    api = customer_api.get(str(event.user_id),None)
+    if api == "Lolicon API":
+        msg,url_list = Lolicon(N,Tag,R18)
+    else:
         if R18:
-            await setu.finish("涩涩是禁止事项！！")
+            msg,url_list = Anosu(N,Tag,R18)
+            api = "Jitsu"
         else:
             if not Tag:
                 msg,url_list = MirlKoi(N,Tag,R18)
@@ -86,26 +106,6 @@ async def _(bot: Bot, event: MessageEvent):
                 else:
                     msg,url_list = Anosu(N,Tag,R18)
                     api = "Jitsu"
-    else:
-        api = customer_api.get(str(event.user_id),None)
-        if api == "Lolicon API":
-            msg,url_list = Lolicon(N,Tag,R18)
-        else:
-            if R18:
-                msg,url_list = Anosu(N,Tag,R18)
-                api = "Jitsu"
-            else:
-                if not Tag:
-                    msg,url_list = MirlKoi(N,Tag,R18)
-                    api = "MirlKoi API"
-                else:
-                    tag = is_MirlKoi_tag(Tag)
-                    if tag:
-                        msg,url_list = MirlKoi(N,tag,R18)
-                        api = "MirlKoi API"
-                    else:
-                        msg,url_list = Anosu(N,Tag,R18)
-                        api = "Jitsu"
 
     msg = msg.replace("Bot_NICKNAME",Bot_NICKNAME)
 
@@ -153,7 +153,7 @@ async def _(bot: Bot, event: MessageEvent):
         msg += "获取图片失败。"
         await setu.finish(msg, at_sender = True)
 
-set_api = on_command("设置api", aliases = {"切换api","指定api"}, priority = 50, block = True)
+set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to_me(), priority = 50, block = True)
 
 @set_api.got(
     "api",
@@ -163,7 +163,7 @@ set_api = on_command("设置api", aliases = {"切换api","指定api"}, priority 
         "2.Lolicon API"
         )
     )
-async def _(bot: Bot, event: PrivateMessageEvent, api: Message = Arg()):
+async def _(bot: Bot, event: MessageEvent, api: Message = Arg()):
     api = str(api)  # type: ignore 
     user_id = str(event.user_id)
     if api == "1":
