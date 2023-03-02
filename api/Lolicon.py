@@ -7,7 +7,7 @@ try:
 except ModuleNotFoundError:
     import json
 
-from nonebot import logger
+from nonebot.log import logger
 
 @catch_error(name="Lolicon")
 @retry(exceptions=Exception, tries=3, delay=1)

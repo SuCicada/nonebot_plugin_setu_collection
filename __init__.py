@@ -58,7 +58,7 @@ async def _(bot: Bot, event: MessageEvent):
         N = int(N)
     except ValueError:
         try:
-            N = int(unicodedata.numeric(N))
+            N = int(unicodedata.numeric(N)) # type: ignore
         except (TypeError, ValueError):
             N = 0
 
@@ -164,7 +164,7 @@ set_api = on_command("设置api", aliases = {"切换api","指定api"}, priority 
         )
     )
 async def _(bot: Bot, event: PrivateMessageEvent, api: Message = Arg()):
-    api = str(api)
+    api = str(api)  # type: ignore 
     user_id = str(event.user_id)
     if api == "1":
         customer_api[user_id] = "Jitsu/MirlKoi API"

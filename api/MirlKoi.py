@@ -7,7 +7,7 @@ try:
 except ModuleNotFoundError:
     import json
 
-from nonebot import logger
+from nonebot.log import logger
 
 MirlKoi_list = {}
 MirlKoi_list["iw233"] = []
