@@ -1,4 +1,6 @@
 import httpx
+from retry import retry
+from .utils import catch_error
 
 try:
     import ujson as json
@@ -41,6 +43,8 @@ def is_MirlKoi_tag(Tag:str = ""):
     else:
         return None
 
+@catch_error(name="MirlKoi")
+@retry(exceptions=Exception, tries=3, delay=1)
 def MirlKoi(N:int = 1, Tag:str = "", R18:int = 0):
     Tag = Tag if Tag else "iw233"
     tag = tag_dict[Tag]

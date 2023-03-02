@@ -110,7 +110,8 @@ async def _(bot: Bot, event: MessageEvent):
     msg = msg.replace("Bot_NICKNAME",Bot_NICKNAME)
 
     msg += f"\n图片取自：{api}\n"
-
+    if url_list is None:
+        url_list = []
     if len(url_list) >3:
         msg = msg[:-1]
         await setu.send(msg, at_sender = True)
@@ -118,7 +119,7 @@ async def _(bot: Bot, event: MessageEvent):
     async with httpx.AsyncClient() as client:
         task_list = []
         for url in url_list:
-            task = asyncio.create_task(func(client,url))
+            task = asyncio.create_task(func(client,url)) # type: ignore            
             task_list.append(task)
         image_list = await asyncio.gather(*task_list)
 
@@ -175,4 +176,3 @@ async def _(bot: Bot, event: PrivateMessageEvent, api: Message = Arg()):
         await set_api.finish("api已切换为Lolicon API")
     else:
         await set_api.finish("api设置失败")
-

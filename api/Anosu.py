@@ -1,4 +1,7 @@
 import httpx
+from retry import retry
+
+from .utils import catch_error
 
 try:
     import ujson as json
@@ -7,10 +10,12 @@ except ModuleNotFoundError:
 
 from nonebot import logger
 
+@catch_error(name="Anosu")
+@retry(exceptions=Exception, tries=3, delay=1)
 def Anosu(N:int = 1, Tag:str = "", R18:int = 0):
     msg = ""
     if 1 <= N <= 10:
-        msg += f"Bot_NICKNAME为你准备了{N}张随机{'r18'if R18 else ''}{Tag}色图。"
+        msg += f"这是{N}张随机{'r18'if R18 else ''}{Tag}色图。（嫌弃"
     elif N > 10:
         N = 1
         if R18:

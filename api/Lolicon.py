@@ -1,4 +1,6 @@
 import httpx
+from retry import retry
+from .utils import catch_error
 
 try:
     import ujson as json
@@ -7,6 +9,8 @@ except ModuleNotFoundError:
 
 from nonebot import logger
 
+@catch_error(name="Lolicon")
+@retry(exceptions=Exception, tries=3, delay=1)
 def Lolicon(N:int = 1, Tag:str = "", R18:int = 0):
     if Tag:
         tag_list = Tag.strip().split()
