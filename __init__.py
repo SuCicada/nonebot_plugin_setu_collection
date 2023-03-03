@@ -87,7 +87,7 @@ async def _(bot: Bot, event: MessageEvent):
     #                 msg,url_list = Anosu(N,Tag,R18)
     #                 api = "Jitsu"
     # else:
-    api = customer_api.get(str(event.user_id),None)
+    api = customer_api.get(str(0),None)
     if api == "Lolicon API":
         msg,url_list = Lolicon(N,Tag,R18)
     else:
