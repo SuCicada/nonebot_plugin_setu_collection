@@ -15,7 +15,7 @@ from nonebot.log import logger
 def Anosu(N:int = 1, Tag:str = "", R18:int = 0):
     msg = ""
     if 1 <= N <= 10:
-        msg += f"这是{N}张随机{'r18'if R18 else ''}{Tag}色图。（嫌弃"
+        msg += f"这是{N}张随机{'r18'if R18 else ''}{Tag}色图。"
     elif N > 10:
         N = 1
         if R18:
