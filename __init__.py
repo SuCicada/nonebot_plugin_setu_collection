@@ -165,7 +165,7 @@ set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to
     )
 async def _(bot: Bot, event: MessageEvent, api: Message = Arg()):
     api = str(api)  # type: ignore 
-    user_id = str(event.user_id)
+    user_id = 0 # str(event.user_id)
     if api == "1":
         customer_api[user_id] = "Jitsu/MirlKoi API"
         save()
