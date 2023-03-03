@@ -49,109 +49,112 @@ setu = on_regex("^(我?要|来).*[张份].+$", priority = 50, block = True)
 
 @setu.handle()
 async def _(bot: Bot, event: MessageEvent):
-    msg = ""
-    cmd = event.get_plaintext()
-    N = re.sub(r'^我?要|^来|[张份].+$', '', cmd)
-    N = N if N else 1
-
     try:
-        N = int(N)
-    except ValueError:
+        msg = ""
+        cmd = event.get_plaintext()
+        N = re.sub(r'^我?要|^来|[张份].+$', '', cmd)
+        N = N if N else 1
+
         try:
-            N = int(unicodedata.numeric(N)) # type: ignore
-        except (TypeError, ValueError):
-            N = 0
+            N = int(N)
+        except ValueError:
+            try:
+                N = int(unicodedata.numeric(N)) # type: ignore
+            except (TypeError, ValueError):
+                N = 0
 
-    Tag = re.sub(r'^我?要|^来|.*[张份]', '', cmd)
-    Tag = Tag [:-2]if (Tag.endswith("涩图") or Tag.endswith("色图")) else Tag
+        Tag = re.sub(r'^我?要|^来|.*[张份]', '', cmd)
+        Tag = Tag [:-2]if (Tag.endswith("涩图") or Tag.endswith("色图")) else Tag
 
-    if Tag.startswith("r18"):
-        Tag = Tag [3:]
-        R18 = 1
-    else:
-        R18 = 0
-
-    # if isinstance(event,GroupMessageEvent):
-    #     if R18:
-    #         await setu.finish("涩涩是禁止事项！！")
-    #     else:
-    #         if not Tag:
-    #             msg,url_list = MirlKoi(N,Tag,R18)
-    #             api = "MirlKoi API"
-    #         else:
-    #             tag = is_MirlKoi_tag(Tag)
-    #             if tag:
-    #                 msg,url_list = MirlKoi(N,tag,R18)
-    #                 api = "MirlKoi API"
-    #             else:
-    #                 msg,url_list = Anosu(N,Tag,R18)
-    #                 api = "Jitsu"
-    # else:
-    api = customer_api.get(str(0),None)
-    if api == "Lolicon API":
-        msg,url_list = Lolicon(N,Tag,R18)
-    else:
-        if R18:
-            msg,url_list = Anosu(N,Tag,R18)
-            api = "Jitsu"
+        if Tag.startswith("r18"):
+            Tag = Tag [3:]
+            R18 = 1
         else:
-            if not Tag:
-                msg,url_list = MirlKoi(N,Tag,R18)
-                api = "MirlKoi API"
+            R18 = 0
+
+        # if isinstance(event,GroupMessageEvent):
+        #     if R18:
+        #         await setu.finish("涩涩是禁止事项！！")
+        #     else:
+        #         if not Tag:
+        #             msg,url_list = MirlKoi(N,Tag,R18)
+        #             api = "MirlKoi API"
+        #         else:
+        #             tag = is_MirlKoi_tag(Tag)
+        #             if tag:
+        #                 msg,url_list = MirlKoi(N,tag,R18)
+        #                 api = "MirlKoi API"
+        #             else:
+        #                 msg,url_list = Anosu(N,Tag,R18)
+        #                 api = "Jitsu"
+        # else:
+        api = customer_api.get(str(0),None)
+        if api == "Lolicon API":
+            msg,url_list = Lolicon(N,Tag,R18)
+        else:
+            if R18:
+                msg,url_list = Anosu(N,Tag,R18)
+                api = "Jitsu"
             else:
-                tag = is_MirlKoi_tag(Tag)
-                if tag:
-                    msg,url_list = MirlKoi(N,tag,R18)
+                if not Tag:
+                    msg,url_list = MirlKoi(N,Tag,R18)
                     api = "MirlKoi API"
                 else:
-                    msg,url_list = Anosu(N,Tag,R18)
-                    api = "Jitsu"
+                    tag = is_MirlKoi_tag(Tag)
+                    if tag:
+                        msg,url_list = MirlKoi(N,tag,R18)
+                        api = "MirlKoi API"
+                    else:
+                        msg,url_list = Anosu(N,Tag,R18)
+                        api = "Jitsu"
 
-    msg = msg.replace("Bot_NICKNAME",Bot_NICKNAME)
+        msg = msg.replace("Bot_NICKNAME",Bot_NICKNAME)
 
-    msg += f"\n图片取自：{api}\n"
-    if url_list is None:
-        url_list = []
-    if len(url_list) >3:
-        msg = msg[:-1]
-        await setu.send(msg, at_sender = True)
+        msg += f"\n图片取自：{api}\n"
+        if url_list is None:
+            url_list = []
+        if len(url_list) >3:
+            msg = msg[:-1]
+            await setu.send(msg, at_sender = True)
 
-    async with httpx.AsyncClient() as client:
-        task_list = []
-        for url in url_list:
-            task = asyncio.create_task(func(client,url)) # type: ignore            
-            task_list.append(task)
-        image_list = await asyncio.gather(*task_list)
+        async with httpx.AsyncClient() as client:
+            task_list = []
+            for url in url_list:
+                task = asyncio.create_task(func(client,url)) # type: ignore            
+                task_list.append(task)
+            image_list = await asyncio.gather(*task_list)
 
-    image_list = [image for image in image_list if image]
+        image_list = [image for image in image_list if image]
 
-    if image_list:
-        N = len(image_list)
-        if N <= 3:
-            image = Message()
-            for i in range(N):
-                image +=  MessageSegment.image(file = image_list[i])
-            await setu.finish(Message(msg) + image, at_sender = True)
-        else:
-            msg_list =[]
-            for i in range(N):
-                msg_list.append(
-                    {
-                        "type": "node",
-                        "data": {
-                            "name": Bot_NICKNAME,
-                            "uin": event.self_id,
-                            "content": MessageSegment.image(file = image_list[i])
-                            }
-                        }
-                    )
-            if isinstance(event,GroupMessageEvent):
-                await bot.send_group_forward_msg(group_id = event.group_id, messages = msg_list)
+        if image_list:
+            N = len(image_list)
+            if N <= 3:
+                image = Message()
+                for i in range(N):
+                    image +=  MessageSegment.image(file = image_list[i])
+                await setu.finish(Message(msg) + image, at_sender = True)
             else:
-                await bot.send_private_forward_msg(user_id = event.user_id, messages = msg_list)
-    else:
-        msg += "获取图片失败。"
-        await setu.finish(msg, at_sender = True)
+                msg_list =[]
+                for i in range(N):
+                    msg_list.append(
+                        {
+                            "type": "node",
+                            "data": {
+                                "name": Bot_NICKNAME,
+                                "uin": event.self_id,
+                                "content": MessageSegment.image(file = image_list[i])
+                                }
+                            }
+                        )
+                if isinstance(event,GroupMessageEvent):
+                    await bot.send_group_forward_msg(group_id = event.group_id, messages = msg_list)
+                else:
+                    await bot.send_private_forward_msg(user_id = event.user_id, messages = msg_list)
+        else:
+            msg += "获取图片失败。"
+            await setu.finish(msg, at_sender = True)
+    except Exception as e:
+        await setu.finish(f"出错了呜呜呜~\n{e}")
 
 set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to_me(), priority = 50, block = True)
 
