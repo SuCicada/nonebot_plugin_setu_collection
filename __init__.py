@@ -154,7 +154,10 @@ async def _(bot: Bot, event: MessageEvent):
             msg += "获取图片失败。"
             await setu.finish(msg, at_sender = True)
     except Exception as e:
-        await setu.finish(f"出错了呜呜呜~\n{e}")
+        import traceback
+        print(traceback.extract_stack())
+        print(str(e))
+        await setu.finish(f"出错了呜呜呜~\n{str(e)}")
 
 set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to_me(), priority = 50, block = True)
 
