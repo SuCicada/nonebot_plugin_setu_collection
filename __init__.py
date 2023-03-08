@@ -155,7 +155,7 @@ async def _(bot: Bot, event: MessageEvent):
             await setu.finish(msg, at_sender = True)
     except Exception as e:
         if not isinstance(e, exception.FinishedException):
-            await setu.send(f"出错了呜呜呜~. 可能是图片太涩了.\n{str(e)}")
+            await setu.send(f"出错了呜呜呜~. 可能是图片太涩了.拜托再试一次\n{str(e)}")
             raise e
 
 set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to_me(), priority = 50, block = True)
