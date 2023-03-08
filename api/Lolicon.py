@@ -47,7 +47,8 @@ def Lolicon(N:int = 1, Tag:str = "", R18:int = 0):
             for i in range(N):
                 print(Lolicon_list[i]["urls"])
                 url =  Lolicon_list[i]["urls"]["regular"]
-                logger.info("url: " + url)
+                pid =  Lolicon_list[i]["pid"]
+                logger.info("pid: " + pid)
                 image_list.append(url)
                 msg += "\nurl: " + url
         else:
