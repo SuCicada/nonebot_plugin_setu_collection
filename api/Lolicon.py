@@ -35,7 +35,8 @@ def Lolicon(N:int = 1, Tag:str = "", R18:int = 0):
         N = 1
         msg += f"Bot_NICKNAME接收到了奇怪的数量参数，不过Bot_NICKNAME送你一张随机{'r18'if R18 else ''}{tag[5:]}色图。"
     logger.info(f"正在从 Lolicon API 获取图片。")
-    resp = httpx.get(f"https://api.lolicon.app/setu/v2?num={N}&r18={R18}{tag}&excludeAI=1")
+    size="regular"
+    resp = httpx.get(f"https://api.lolicon.app/setu/v2?num={N}&r18={R18}{tag}&excludeAI=1&size={size}")
     if resp.status_code == 200:
         resp = resp.text
         resp = ''.join(x for x in resp if x.isprintable())
@@ -44,6 +45,7 @@ def Lolicon(N:int = 1, Tag:str = "", R18:int = 0):
         if Lolicon_list:
             N = len(Lolicon_list)
             for i in range(N):
+                print(Lolicon_list[i]["urls"])
                 url =  Lolicon_list[i]["urls"]["regular"]
                 logger.info("url: " + url)
                 image_list.append(url)
