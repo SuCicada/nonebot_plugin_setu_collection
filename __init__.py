@@ -49,6 +49,7 @@ setu = on_regex("^(我?要|来).*[张份].+$", priority = 50, block = True)
 
 @setu.handle()
 async def _(bot: Bot, event: MessageEvent):
+    _url_list = []
     try:
         msg = ""
         cmd = event.get_plaintext()
@@ -117,6 +118,7 @@ async def _(bot: Bot, event: MessageEvent):
             msg = msg[:-1]
             await setu.send(msg, at_sender = True)
 
+        _url_list = url_list
         async with httpx.AsyncClient() as client:
             task_list = []
             for url in url_list:
@@ -155,7 +157,13 @@ async def _(bot: Bot, event: MessageEvent):
             await setu.finish(msg, at_sender = True)
     except Exception as e:
         if not isinstance(e, exception.FinishedException):
-            await setu.send(f"出错了呜呜呜~. 可能是图片太涩了.拜托再试一次\n{str(e)}")
+            if len(_url_list) > 0:
+                url_str = "\n".join(_url_list)
+                await setu.send(f"出错了呜呜呜~. 可能是图片太涩了.拜托再试一次 \n{str(e)}.\n"
+                                  "不过我获取到了图片地址:")
+                await setu.send(f"{url_str} ")
+            else:
+                await setu.send(f"出错了呜呜呜~.拜托再试一次 \n{str(e)}")
             raise e
 
 set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to_me(), priority = 50, block = True)
