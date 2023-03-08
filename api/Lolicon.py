@@ -48,9 +48,9 @@ def Lolicon(N:int = 1, Tag:str = "", R18:int = 0):
                 print(Lolicon_list[i]["urls"])
                 url =  Lolicon_list[i]["urls"]["regular"]
                 pid =  Lolicon_list[i]["pid"]
-                logger.info("pid: " + str(pid))
+                logger.info("url: " + url)
                 image_list.append(url)
-                msg += "\nurl: " + url
+                msg += "\npid: " + str(pid)
         else:
             msg = f"没有找到【{tag}】"
     else:
