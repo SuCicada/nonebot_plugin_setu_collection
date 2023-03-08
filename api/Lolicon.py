@@ -44,7 +44,10 @@ def Lolicon(N:int = 1, Tag:str = "", R18:int = 0):
         if Lolicon_list:
             N = len(Lolicon_list)
             for i in range(N):
-                image_list.append(Lolicon_list[i]["urls"]["original"])
+                url =  Lolicon_list[i]["urls"]["regular"]
+                logger.info("url: " + url)
+                image_list.append(url)
+                msg += "\nurl: " + url
         else:
             msg = f"没有找到【{tag}】"
     else:
