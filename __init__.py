@@ -159,7 +159,7 @@ async def _(bot: Bot, event: MessageEvent):
         if not isinstance(e, exception.FinishedException):
             if len(_url_list) > 0:
                 url_str = "\n".join(_url_list)
-                await setu.send(f"出错了呜呜呜~. 可能是图片太涩了.拜托再试一次 \n{str(e)}.\n"
+                await setu.send(f"出错了呜呜呜~. 可能是图片太涩了.拜托再试一次 {str(e)}.\n"
                                   "不过我获取到了图片地址:")
                 await setu.send(f"{url_str} ")
             else:
@@ -177,8 +177,8 @@ set_api = on_command("设置api", aliases = {"切换api","指定api"}, rule = to
         )
     )
 async def _(bot: Bot, event: MessageEvent, api: Message = Arg()):
-    api = str(api)  # type: ignore 
-    user_id = 0 # str(event.user_id)
+    api = str(api).strip()  # type: ignore 
+    user_id = str(0) # str(event.user_id)
     if api == "1":
         customer_api[user_id] = "Jitsu/MirlKoi API"
         save()
